@@ -2,19 +2,19 @@ import { Package, Globe, BarChart3 } from "lucide-react"
 
 const services = [
   {
-    icon: Package,
+    image: "/images/container-truck-glfc.png",
     title: "Import & Export Logistics",
     description:
       "End-to-end freight consulting and coordination — from documentation and customs compliance to final-mile delivery across international borders.",
   },
   {
-    icon: BarChart3,
+    image: "/images/forklift-glfc.png",
     title: "Supply Chain Support",
     description:
       "Comprehensive logistics planning and supplier coordination, ensuring your supply chain operates efficiently and transparently at every stage.",
   },
   {
-    icon: Globe,
+    image: "/images/air-freight-glfc.png",
     title: "Africa Trade Expertise",
     description:
       "Extensive experience supporting large-scale projects across African markets, navigating local regulations, routes, and relationships with confidence.",
@@ -38,27 +38,28 @@ export function ServicesSection() {
         </div>
 
         <div className="grid md:grid-cols-3 gap-8">
-          {services.map((service, index) => {
-            const Icon = service.icon
-            return (
-              <article
-                key={service.title}
-                className="bg-card border border-border p-8 group hover:border-primary transition-colors duration-300"
-              >
-                <div className="flex items-center justify-between mb-6">
-                  <div className="w-12 h-12 bg-secondary flex items-center justify-center">
-                    <Icon className="w-5 h-5 text-primary" aria-hidden="true" />
-                  </div>
-                  <span className="text-muted-foreground/30 font-serif text-4xl font-light leading-none">
-                    0{index + 1}
-                  </span>
+          {services.map((service, index) => (
+            <article
+              key={service.title}
+              className="bg-card border border-border p-8 group hover:border-primary transition-colors duration-300"
+            >
+              <div className="flex items-center justify-between mb-6">
+                <div className="w-12 h-12 flex items-center justify-center">
+                  <img
+                    src={service.image}
+                    alt={service.title}
+                    className="h-10 w-10 object-contain"
+                  />
                 </div>
-                <h3 className="font-serif text-foreground text-xl mb-4 leading-snug">{service.title}</h3>
-                <p className="text-muted-foreground font-sans text-sm leading-relaxed">{service.description}</p>
-                <div className="mt-8 w-8 h-px bg-primary group-hover:w-16 transition-all duration-300" aria-hidden="true" />
-              </article>
-            )
-          })}
+                <span className="text-muted-foreground/30 font-serif text-4xl font-light leading-none">
+                  0{index + 1}
+                </span>
+              </div>
+              <h3 className="font-serif text-foreground text-xl mb-4 leading-snug">{service.title}</h3>
+              <p className="text-muted-foreground font-sans text-sm leading-relaxed">{service.description}</p>
+              <div className="mt-8 w-8 h-px bg-primary group-hover:w-16 transition-all duration-300" aria-hidden="true" />
+            </article>
+          ))}
         </div>
       </div>
     </section>

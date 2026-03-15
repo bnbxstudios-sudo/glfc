@@ -27,7 +27,13 @@ export function Navbar() {
     >
       <div className="max-w-7xl mx-auto px-6 lg:px-8 flex items-center justify-between h-16">
         {/* Logo */}
-        <a href="#" className="flex items-center gap-2 group" aria-label="GLFC Home">
+        <a href="#" className="flex items-center gap-3 group" aria-label="GLFC Home">
+          <img
+            src="/images/icon-black.png"
+            alt="GLFC Logistics Icon"
+            className="h-8 w-8 object-contain"
+            style={{ filter: 'brightness(10)' }}
+          />
           <span className="text-primary font-bold text-xl tracking-tight leading-none">GLFC</span>
           <span className="hidden sm:block h-5 w-px bg-primary/40 mx-1" aria-hidden="true" />
           <span className="hidden sm:block text-xs text-white/70 font-sans uppercase tracking-widest leading-tight">
