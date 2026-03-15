@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Mail, Phone, Building2, Send } from "lucide-react"
+import { Mail, Phone, Building2, Send, AlertCircle } from "lucide-react"
 
 export function ContactSection() {
   const [formState, setFormState] = useState({
@@ -11,18 +11,47 @@ export function ContactSection() {
     message: "",
   })
   const [submitted, setSubmitted] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState("")
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
     setFormState((prev) => ({ ...prev, [e.target.name]: e.target.value }))
+    setError("")
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    // In a real deployment this would POST to an API or use mailto
-    const subject = encodeURIComponent(`Enquiry from ${formState.name} – ${formState.company}`)
-    const body = encodeURIComponent(formState.message)
-    window.location.href = `mailto:info@glfc.co.za?subject=${subject}&body=${body}`
-    setSubmitted(true)
+    setIsLoading(true)
+    setError("")
+
+    try {
+      const formData = new FormData()
+      formData.append("name", formState.name)
+      formData.append("email", formState.email)
+      formData.append("company", formState.company)
+      formData.append("message", formState.message)
+      // FormSubmit.co special fields
+      formData.append("_subject", `New enquiry from ${formState.name} – ${formState.company}`)
+      formData.append("_captcha", "false") // Disable captcha for better UX
+      formData.append("_autoresponse", "Thank you for contacting GLFC. We've received your message and will get back to you within 24 hours.")
+
+      const response = await fetch("https://formsubmit.co/gale@glfc.co.za", {
+        method: "POST",
+        body: formData,
+      })
+
+      if (response.ok) {
+        setSubmitted(true)
+        setFormState({ name: "", company: "", email: "", message: "" })
+      } else {
+        setError("Failed to send message. Please try again.")
+      }
+    } catch (err) {
+      setError("An error occurred. Please try again or email us directly.")
+      console.error("[v0] Form submission error:", err)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   const contactDetails = [
@@ -100,9 +129,9 @@ export function ContactSection() {
                 <div className="w-14 h-14 bg-primary/10 flex items-center justify-center">
                   <Send className="w-6 h-6 text-primary" aria-hidden="true" />
                 </div>
-                <h3 className="font-serif text-foreground text-2xl">Message Sent</h3>
+                <h3 className="font-serif text-foreground text-2xl">Message Sent Successfully</h3>
                 <p className="text-muted-foreground font-sans text-sm leading-relaxed max-w-xs">
-                  Thank you for reaching out. Your email client should have opened — we'll be in touch shortly.
+                  Thank you for reaching out. A confirmation email has been sent to you, and we'll reply within 24 hours.
                 </p>
                 <button
                   onClick={() => setSubmitted(false)}
@@ -113,6 +142,12 @@ export function ContactSection() {
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-5" noValidate>
+                {error && (
+                  <div className="bg-red-50 border border-red-200 rounded-sm p-4 flex gap-3">
+                    <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" aria-hidden="true" />
+                    <p className="text-red-700 font-sans text-sm">{error}</p>
+                  </div>
+                )}
                 <div className="grid sm:grid-cols-2 gap-5">
                   <div className="flex flex-col gap-2">
                     <label htmlFor="name" className="font-sans text-xs uppercase tracking-widest text-muted-foreground">
@@ -176,10 +211,20 @@ export function ContactSection() {
                 </div>
                 <button
                   type="submit"
-                  className="w-full bg-primary text-primary-foreground font-sans font-medium text-sm py-3 px-8 hover:bg-primary/90 transition-colors flex items-center justify-center gap-2"
+                  disabled={isLoading}
+                  className="w-full bg-primary text-primary-foreground font-sans font-medium text-sm py-3 px-8 hover:bg-primary/90 disabled:bg-primary/50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
                 >
-                  <Send className="w-4 h-4" aria-hidden="true" />
-                  Send Message
+                  {isLoading ? (
+                    <>
+                      <span className="inline-block w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" aria-hidden="true" />
+                      Sending...
+                    </>
+                  ) : (
+                    <>
+                      <Send className="w-4 h-4" aria-hidden="true" />
+                      Send Message
+                    </>
+                  )}
                 </button>
               </form>
             )}
